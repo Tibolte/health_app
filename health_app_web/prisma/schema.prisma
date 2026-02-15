@@ -57,3 +57,12 @@ model PowerPb {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model StepCount {
+  id        String   @id @default(uuid())
+  date      DateTime @unique
+  steps     Int
+  source    String   @default("healthkit")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
