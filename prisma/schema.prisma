@@ -7,4 +7,53 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Add your models below this line
+model Workout {
+  id               String   @id @default(uuid())
+  externalId       String   @unique // intervals.icu activity id
+  source           String   @default("intervals.icu")
+  date             DateTime
+  title            String
+  sport            String
+  description      String?
+  coachNotes       String?
+  isCompleted      Boolean  @default(false)
+  plannedDuration  Int?     // minutes
+  plannedTss       Float?
+  duration         Int?     // minutes
+  distance         Float?   // km
+  tss              Float?
+  intensityFactor  Float?
+  normalizedPower  Int?     // watts
+  averagePower     Int?     // watts
+  maxPower         Int?     // watts
+  averageHr        Int?     // bpm
+  maxHr            Int?     // bpm
+  calories         Int?
+  elevationGain    Float?   // meters
+  powerZones       Json?    // { "z1": 600, "z2": 1200, ... } seconds per zone
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([date])
+}
+
+model FitnessMetric {
+  id   String   @id @default(uuid())
+  date DateTime @unique
+  ctl  Float    // Chronic Training Load (fitness)
+  atl  Float    // Acute Training Load (fatigue)
+  tsb  Float    // Training Stress Balance (form) = ctl - atl
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PowerPb {
+  id         String   @id @default(uuid())
+  duration   Int      @unique // minutes (1, 5, 20, 60, etc.)
+  power      Int      // watts
+  recordedAt DateTime // date of the effort
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
