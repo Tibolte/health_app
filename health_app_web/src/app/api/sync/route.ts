@@ -10,6 +10,10 @@ import {
   mapWellness,
 } from "@/lib/intervals";
 
+function toLocalDate(dateStr: string): string {
+  return dateStr.substring(0, 10);
+}
+
 export async function POST() {
   try {
     const { start, end } = getCurrentWeekRange();
@@ -24,33 +28,62 @@ export async function POST() {
     let workoutCount = 0;
     let fitnessCount = 0;
 
+    // Build a map of activities by local date for matching with planned events
+    const activityByDate = new Map<string, string[]>();
+    const activities = activitiesResult.status === "fulfilled" ? activitiesResult.value : [];
+
     // Upsert activities (completed workouts)
-    if (activitiesResult.status === "fulfilled") {
-      for (const activity of activitiesResult.value) {
-        const data = mapActivity(activity);
-        await prisma.workout.upsert({
-          where: { externalId: data.externalId },
-          create: data,
-          update: data,
-        });
-        workoutCount++;
-      }
+    for (const activity of activities) {
+      const data = mapActivity(activity);
+      await prisma.workout.upsert({
+        where: { externalId: data.externalId },
+        create: data,
+        update: data,
+      });
+      workoutCount++;
+
+      const localDate = toLocalDate(activity.start_date_local);
+      const existing = activityByDate.get(localDate) || [];
+      existing.push(String(activity.id));
+      activityByDate.set(localDate, existing);
     }
 
-    // Upsert events (planned workouts)
+    // Upsert events (planned workouts) — merge with completed activities when matched
     if (eventsResult.status === "fulfilled") {
-      // Only include workout-type events, skip notes etc.
       const workoutEvents = eventsResult.value.filter(
         (e) => e.category === "WORKOUT"
       );
       for (const event of workoutEvents) {
-        const data = mapEvent(event);
-        await prisma.workout.upsert({
-          where: { externalId: data.externalId },
-          create: data,
-          update: data,
-        });
-        workoutCount++;
+        const eventDate = toLocalDate(event.start_date_local);
+        const matchingActivityIds = activityByDate.get(eventDate);
+
+        if (matchingActivityIds && matchingActivityIds.length > 0) {
+          // A completed activity exists on the same day — merge planned data into it
+          const activityExternalId = matchingActivityIds.shift()!;
+          await prisma.workout.update({
+            where: { externalId: activityExternalId },
+            data: {
+              description: event.description ?? undefined,
+              coachNotes: event.coach_notes ?? undefined,
+              plannedDuration: event.moving_time ? Math.round(event.moving_time / 60) : undefined,
+              plannedTss: event.icu_training_load ?? undefined,
+            },
+          });
+          // Remove any previously-synced planned event record
+          await prisma.workout.deleteMany({
+            where: { externalId: `event-${event.id}` },
+          });
+          workoutCount++;
+        } else {
+          // No matching activity — keep as planned workout
+          const data = mapEvent(event);
+          await prisma.workout.upsert({
+            where: { externalId: data.externalId },
+            create: data,
+            update: data,
+          });
+          workoutCount++;
+        }
       }
     }
 

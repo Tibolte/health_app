@@ -189,6 +189,9 @@ export default function Dashboard() {
                   border: w.isCompleted
                     ? "1px solid #334155"
                     : "1px dashed #475569",
+                  borderLeft: w.isCompleted
+                    ? "3px solid #10b981"
+                    : "3px solid #f59e0b",
                 }}
               >
                 <div style={styles.workoutHeader}>
@@ -207,7 +210,9 @@ export default function Dashboard() {
                   {w.normalizedPower && <span>NP {w.normalizedPower}w</span>}
                   {w.averageHr && <span>{w.averageHr} bpm</span>}
                 </div>
-                {!w.isCompleted && (
+                {w.isCompleted ? (
+                  <div style={styles.completedBadge}>Completed</div>
+                ) : (
                   <div style={styles.plannedBadge}>Planned</div>
                 )}
               </div>
@@ -351,6 +356,16 @@ const styles: Record<string, React.CSSProperties> = {
     flexWrap: "wrap" as const,
     fontSize: "0.8rem",
     color: "#94a3b8",
+  },
+  completedBadge: {
+    position: "absolute" as const,
+    top: "0.5rem",
+    right: "0.5rem",
+    fontSize: "0.65rem",
+    fontWeight: 600,
+    color: "#10b981",
+    textTransform: "uppercase" as const,
+    letterSpacing: "0.05em",
   },
   plannedBadge: {
     position: "absolute" as const,
