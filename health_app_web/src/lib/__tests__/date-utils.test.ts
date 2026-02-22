@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { getCurrentWeekRange, getDateRange } from "../date-utils";
+import { getCurrentWeekRange, getNextWeekRange, getDateRange } from "../date-utils";
 
 describe("getCurrentWeekRange", () => {
   afterEach(() => {
@@ -52,6 +52,62 @@ describe("getCurrentWeekRange", () => {
     vi.setSystemTime(new Date(2024, 11, 31, 10, 0, 0));
 
     const { start, end } = getCurrentWeekRange();
+    expect(start).toBe("2024-12-30");
+    expect(end).toBe("2025-01-05");
+  });
+});
+
+describe("getNextWeekRange", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("returns next Mon–Sun range when today is Wednesday", () => {
+    vi.useFakeTimers();
+    // Wednesday 2025-03-12
+    vi.setSystemTime(new Date(2025, 2, 12, 10, 0, 0));
+
+    const { start, end } = getNextWeekRange();
+    expect(start).toBe("2025-03-17"); // Next Monday
+    expect(end).toBe("2025-03-23"); // Next Sunday
+  });
+
+  it("returns next Mon–Sun range when today is Monday", () => {
+    vi.useFakeTimers();
+    // Monday 2025-03-10
+    vi.setSystemTime(new Date(2025, 2, 10, 10, 0, 0));
+
+    const { start, end } = getNextWeekRange();
+    expect(start).toBe("2025-03-17");
+    expect(end).toBe("2025-03-23");
+  });
+
+  it("returns next Mon–Sun range when today is Sunday", () => {
+    vi.useFakeTimers();
+    // Sunday 2025-03-16
+    vi.setSystemTime(new Date(2025, 2, 16, 10, 0, 0));
+
+    const { start, end } = getNextWeekRange();
+    expect(start).toBe("2025-03-17");
+    expect(end).toBe("2025-03-23");
+  });
+
+  it("handles month boundary crossing", () => {
+    vi.useFakeTimers();
+    // Thursday 2025-03-27 → next Monday is March 31, next Sunday is April 6
+    vi.setSystemTime(new Date(2025, 2, 27, 10, 0, 0));
+
+    const { start, end } = getNextWeekRange();
+    expect(start).toBe("2025-03-31");
+    expect(end).toBe("2025-04-06");
+  });
+
+  it("handles year boundary crossing", () => {
+    vi.useFakeTimers();
+    // Friday 2024-12-27 → next Monday is Dec 30, next Sunday is Jan 5
+    vi.setSystemTime(new Date(2024, 11, 27, 10, 0, 0));
+
+    const { start, end } = getNextWeekRange();
     expect(start).toBe("2024-12-30");
     expect(end).toBe("2025-01-05");
   });

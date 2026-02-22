@@ -45,6 +45,7 @@ interface PowerPb {
 
 export default function Dashboard() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
+  const [nextWeekWorkouts, setNextWeekWorkouts] = useState<Workout[]>([]);
   const [fitnessMetrics, setFitnessMetrics] = useState<FitnessMetric[]>([]);
   const [powerPbs, setPowerPbs] = useState<PowerPb[]>([]);
   const [syncing, setSyncing] = useState(false);
@@ -57,6 +58,7 @@ export default function Dashboard() {
       if (!res.ok) throw new Error("Failed to load data");
       const data = await res.json();
       setWorkouts(data.workouts || []);
+      setNextWeekWorkouts(data.nextWeekWorkouts || []);
       setFitnessMetrics(data.fitnessMetrics || []);
       setPowerPbs(data.powerPbs || []);
     } catch {
@@ -222,6 +224,45 @@ export default function Dashboard() {
           </div>
         )}
       </section>
+
+      {/* Next Week */}
+      {nextWeekWorkouts.length > 0 && (
+        <section style={styles.section}>
+          <h2 style={styles.sectionTitle}>
+            Next Week{" "}
+            <span style={{ color: "#64748b", fontWeight: 400, fontSize: "0.9rem" }}>
+              ({nextWeekWorkouts.length} workouts)
+            </span>
+          </h2>
+          <div style={styles.workoutGrid}>
+            {nextWeekWorkouts.map((w) => (
+              <div
+                key={w.id}
+                style={{
+                  ...styles.workoutCard,
+                  border: "1px dashed #475569",
+                  borderLeft: "3px solid #f59e0b",
+                }}
+              >
+                <div style={styles.workoutHeader}>
+                  <span style={styles.workoutSport}>{w.sport}</span>
+                  <span style={styles.workoutDate}>{formatDate(w.date)}</span>
+                </div>
+                <div style={styles.workoutTitle}>{w.title}</div>
+                <div style={styles.workoutStats}>
+                  {w.plannedDuration && (
+                    <span>{formatDuration(w.plannedDuration)}</span>
+                  )}
+                  {w.plannedTss && (
+                    <span>TSS {Math.round(w.plannedTss)}</span>
+                  )}
+                </div>
+                <div style={styles.plannedBadge}>Planned</div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Power PBs */}
       <section style={styles.section}>

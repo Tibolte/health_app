@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getCurrentWeekRange, getDateRange } from "@/lib/date-utils";
+import { getCurrentWeekRange, getNextWeekRange, getDateRange } from "@/lib/date-utils";
 import {
   fetchActivities,
   fetchEvents,
@@ -17,12 +17,14 @@ function toLocalDate(dateStr: string): string {
 export async function POST() {
   try {
     const { start, end } = getCurrentWeekRange();
+    const nextWeek = getNextWeekRange();
     const wellnessRange = getDateRange(365);
 
-    const [activitiesResult, eventsResult, wellnessResult] =
+    const [activitiesResult, eventsResult, nextWeekEventsResult, wellnessResult] =
       await Promise.allSettled([
         fetchActivities(start, end),
         fetchEvents(start, end),
+        fetchEvents(nextWeek.start, nextWeek.end),
         fetchWellness(wellnessRange.start, wellnessRange.end),
       ]);
 
@@ -64,6 +66,7 @@ export async function POST() {
           await prisma.workout.update({
             where: { externalId: activityExternalId },
             data: {
+              title: event.name || undefined,
               description: event.description ?? undefined,
               coachNotes: event.coach_notes ?? undefined,
               plannedDuration: event.moving_time ? Math.round(event.moving_time / 60) : undefined,
@@ -85,6 +88,22 @@ export async function POST() {
           });
           workoutCount++;
         }
+      }
+    }
+
+    // Upsert next week's events (planned workouts only — no activities for the future)
+    if (nextWeekEventsResult.status === "fulfilled") {
+      const workoutEvents = nextWeekEventsResult.value.filter(
+        (e) => e.category === "WORKOUT"
+      );
+      for (const event of workoutEvents) {
+        const data = mapEvent(event);
+        await prisma.workout.upsert({
+          where: { externalId: data.externalId },
+          create: data,
+          update: data,
+        });
+        workoutCount++;
       }
     }
 
@@ -120,13 +139,20 @@ export async function POST() {
 export async function GET() {
   try {
     const { start, end } = getCurrentWeekRange();
+    const nextWeek = getNextWeekRange();
 
     const startDate = new Date(start);
     const endDate = new Date(end + "T23:59:59");
+    const nextWeekStartDate = new Date(nextWeek.start);
+    const nextWeekEndDate = new Date(nextWeek.end + "T23:59:59");
 
-    const [workouts, fitnessMetrics, powerPbs] = await Promise.all([
+    const [workouts, nextWeekWorkouts, fitnessMetrics, powerPbs] = await Promise.all([
       prisma.workout.findMany({
         where: { date: { gte: startDate, lte: endDate } },
+        orderBy: { date: "asc" },
+      }),
+      prisma.workout.findMany({
+        where: { date: { gte: nextWeekStartDate, lte: nextWeekEndDate } },
         orderBy: { date: "asc" },
       }),
       prisma.fitnessMetric.findMany({
@@ -138,7 +164,7 @@ export async function GET() {
       }),
     ]);
 
-    return NextResponse.json({ workouts, fitnessMetrics, powerPbs });
+    return NextResponse.json({ workouts, nextWeekWorkouts, fitnessMetrics, powerPbs });
   } catch (error) {
     console.error("GET sync error:", error);
     return NextResponse.json(
