@@ -64,8 +64,16 @@ describe("GET /api/fitness-trend", () => {
     expect(response.status).toBe(200);
   });
 
-  it("returns 400 for invalid days param", async () => {
+  it("accepts days=7", async () => {
+    mockPrisma.fitnessMetric.findMany.mockResolvedValue([]);
+
     const response = await GET(makeRequest("7"));
+
+    expect(response.status).toBe(200);
+  });
+
+  it("returns 400 for invalid days param", async () => {
+    const response = await GET(makeRequest("15"));
     const body = await response.json();
 
     expect(response.status).toBe(400);

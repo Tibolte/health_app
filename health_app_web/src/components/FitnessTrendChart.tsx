@@ -39,8 +39,11 @@ function formatTooltipLabel(ts: number): string {
 }
 
 const RANGE_OPTIONS = [
-  { value: 30, label: "30 days" },
-  { value: 90, label: "90 days" },
+  { value: 7, label: "7 days" },
+  { value: 30, label: "1 month" },
+  { value: 42, label: "42 days" },
+  { value: 90, label: "3 months" },
+  { value: 180, label: "6 months" },
   { value: 365, label: "1 year" },
 ] as const;
 

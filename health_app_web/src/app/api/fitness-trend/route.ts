@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-const ALLOWED_DAYS = [30, 90, 365] as const;
+const ALLOWED_DAYS = [7, 30, 42, 90, 180, 365] as const;
 
 export async function GET(request: NextRequest) {
   try {
