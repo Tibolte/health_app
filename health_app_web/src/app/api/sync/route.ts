@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getCurrentWeekRange } from "@/lib/date-utils";
+import { getCurrentWeekRange, getDateRange } from "@/lib/date-utils";
 import {
   fetchActivities,
   fetchEvents,
@@ -17,12 +17,13 @@ function toLocalDate(dateStr: string): string {
 export async function POST() {
   try {
     const { start, end } = getCurrentWeekRange();
+    const wellnessRange = getDateRange(365);
 
     const [activitiesResult, eventsResult, wellnessResult] =
       await Promise.allSettled([
         fetchActivities(start, end),
         fetchEvents(start, end),
-        fetchWellness(start, end),
+        fetchWellness(wellnessRange.start, wellnessRange.end),
       ]);
 
     let workoutCount = 0;

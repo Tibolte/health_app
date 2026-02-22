@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Toast, useToast } from "@/components/Toast";
+import FitnessTrendChart from "@/components/FitnessTrendChart";
 
 interface Workout {
   id: string;
@@ -166,6 +167,7 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
+          <FitnessTrendChart />
         </section>
       )}
 

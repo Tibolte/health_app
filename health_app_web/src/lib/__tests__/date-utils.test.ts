@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { getCurrentWeekRange } from "../date-utils";
+import { getCurrentWeekRange, getDateRange } from "../date-utils";
 
 describe("getCurrentWeekRange", () => {
   afterEach(() => {
@@ -54,5 +54,47 @@ describe("getCurrentWeekRange", () => {
     const { start, end } = getCurrentWeekRange();
     expect(start).toBe("2024-12-30");
     expect(end).toBe("2025-01-05");
+  });
+});
+
+describe("getDateRange", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("returns a range of 30 days ending today", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2025, 2, 15, 10, 0, 0));
+
+    const { start, end } = getDateRange(30);
+    expect(end).toBe("2025-03-15");
+    expect(start).toBe("2025-02-13");
+  });
+
+  it("returns a range of 90 days ending today", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2025, 2, 15, 10, 0, 0));
+
+    const { start, end } = getDateRange(90);
+    expect(end).toBe("2025-03-15");
+    expect(start).toBe("2024-12-15");
+  });
+
+  it("returns a range of 365 days ending today", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2025, 2, 15, 10, 0, 0));
+
+    const { start, end } = getDateRange(365);
+    expect(end).toBe("2025-03-15");
+    expect(start).toBe("2024-03-15");
+  });
+
+  it("handles year boundary", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2025, 0, 10, 10, 0, 0));
+
+    const { start, end } = getDateRange(30);
+    expect(end).toBe("2025-01-10");
+    expect(start).toBe("2024-12-11");
   });
 });

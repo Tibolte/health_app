@@ -15,7 +15,18 @@ export function getCurrentWeekRange(): { start: string; end: string } {
   };
 }
 
-function formatDate(d: Date): string {
+export function getDateRange(days: number): { start: string; end: string } {
+  const end = new Date();
+  const start = new Date();
+  start.setDate(end.getDate() - days);
+
+  return {
+    start: formatDate(start),
+    end: formatDate(end),
+  };
+}
+
+export function formatDate(d: Date): string {
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, "0");
   const day = String(d.getDate()).padStart(2, "0");

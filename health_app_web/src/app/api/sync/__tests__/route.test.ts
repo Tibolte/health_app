@@ -34,6 +34,10 @@ vi.mock("@/lib/date-utils", () => ({
     start: "2025-03-10",
     end: "2025-03-16",
   }),
+  getDateRange: (days: number) => ({
+    start: `range-start-${days}`,
+    end: `range-end-${days}`,
+  }),
 }));
 
 import { POST, GET } from "../route";
@@ -132,6 +136,18 @@ describe("POST /api/sync", () => {
     // Activities failed but events succeeded
     expect(body.success).toBe(true);
     expect(body.synced.workouts).toBe(1);
+  });
+
+  it("fetches wellness with 365-day range", async () => {
+    mockFetchActivities.mockResolvedValue([]);
+    mockFetchEvents.mockResolvedValue([]);
+    mockFetchWellness.mockResolvedValue([]);
+
+    await POST();
+
+    expect(mockFetchActivities).toHaveBeenCalledWith("2025-03-10", "2025-03-16");
+    expect(mockFetchEvents).toHaveBeenCalledWith("2025-03-10", "2025-03-16");
+    expect(mockFetchWellness).toHaveBeenCalledWith("range-start-365", "range-end-365");
   });
 
   it("returns 500 on Prisma error", async () => {
