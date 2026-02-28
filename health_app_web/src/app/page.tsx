@@ -5,6 +5,7 @@ import FitnessTrendChart from "@/components/FitnessTrendChart";
 import FitnessOverview from "@/components/FitnessOverview";
 import WeekWorkouts from "@/components/WeekWorkouts";
 import PowerPbs from "@/components/PowerPbs";
+import StepsChart from "@/components/StepsChart";
 import SkeletonDashboard from "@/components/SkeletonDashboard";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { COLORS } from "@/lib/constants";
@@ -88,6 +89,11 @@ export default function Dashboard() {
       )}
 
       <PowerPbs powerPbs={powerPbs} />
+
+      <section style={styles.section}>
+        <h2 style={styles.sectionTitle}>Steps</h2>
+        <StepsChart />
+      </section>
 
       {toast && (
         <Toast message={toast.message} type={toast.type} onClose={hideToast} />

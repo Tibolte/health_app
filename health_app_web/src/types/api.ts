@@ -1,4 +1,4 @@
-import type { Workout, FitnessMetric, PowerPb } from "./models";
+import type { Workout, FitnessMetric, PowerPb, StepCount } from "./models";
 
 export interface SyncGetResponse {
   workouts: Workout[];
@@ -15,4 +15,8 @@ export interface SyncPostResponse {
 
 export interface FitnessTrendResponse {
   metrics: { date: string; ctl: number; atl: number; tsb: number }[];
+}
+
+export interface StepsResponse {
+  steps: StepCount[];
 }
