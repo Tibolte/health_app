@@ -9,6 +9,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  Cell,
 } from "recharts";
 import type { StepsResponse } from "@/types";
 import CountUp from "./CountUp";
@@ -36,6 +37,25 @@ function formatFullDate(dateStr: string): string {
 
 function todayStr(): string {
   return new Date().toISOString().substring(0, 10);
+}
+
+function SkeletonBlock({ width, height, style }: {
+  width: string;
+  height: string;
+  style?: React.CSSProperties;
+}) {
+  return (
+    <div
+      className="skeleton-shimmer"
+      style={{
+        width,
+        height,
+        background: `linear-gradient(135deg, ${COLORS.slate700}, ${COLORS.slate800})`,
+        borderRadius: "8px",
+        ...style,
+      }}
+    />
+  );
 }
 
 export default function StepsChart() {
@@ -68,7 +88,17 @@ export default function StepsChart() {
   if (loading) {
     return (
       <div style={styles.container}>
-        <p style={{ color: COLORS.slate400, margin: 0 }}>Loading steps...</p>
+        <div style={styles.statsGrid}>
+          {[0, 1, 2].map((i) => (
+            <div key={i} style={{ ...styles.statCard, borderColor: `${COLORS.green}33` }}>
+              <SkeletonBlock width="80px" height="12px" style={{ marginBottom: "0.5rem" }} />
+              <SkeletonBlock width="60px" height="28px" />
+            </div>
+          ))}
+        </div>
+        <div style={styles.chartContainer}>
+          <SkeletonBlock width="100%" height="300px" />
+        </div>
       </div>
     );
   }
@@ -94,32 +124,41 @@ export default function StepsChart() {
 
   const avg30 = data.length > 0 ? Math.round(data.reduce((s, d) => s + d.steps, 0) / data.length) : 0;
 
+  const statCards = [
+    { label: "Today", value: todaySteps },
+    { label: "7-Day Avg", value: avg7 },
+    { label: "30-Day Avg", value: avg30 },
+  ];
+
   return (
     <div style={styles.container}>
       <div style={styles.statsGrid}>
-        <div className="stat-card" style={{ ...styles.statCard, borderColor: `${COLORS.green}33` }}>
-          <div style={styles.statLabel}>Today</div>
-          <div style={{ ...styles.statValue, color: COLORS.green }}>
-            <CountUp value={todaySteps} decimals={0} />
+        {statCards.map((card, i) => (
+          <div
+            key={card.label}
+            className="step-card"
+            style={{ ...styles.statCard, borderColor: `${COLORS.green}33`, "--card-index": i } as React.CSSProperties}
+          >
+            <div style={styles.statLabel}>{card.label}</div>
+            <div style={{ ...styles.statValue, color: COLORS.green }}>
+              <CountUp value={card.value} decimals={0} />
+            </div>
           </div>
-        </div>
-        <div className="stat-card" style={{ ...styles.statCard, borderColor: `${COLORS.green}33` }}>
-          <div style={styles.statLabel}>7-Day Avg</div>
-          <div style={{ ...styles.statValue, color: COLORS.green }}>
-            <CountUp value={avg7} decimals={0} />
-          </div>
-        </div>
-        <div className="stat-card" style={{ ...styles.statCard, borderColor: `${COLORS.green}33` }}>
-          <div style={styles.statLabel}>30-Day Avg</div>
-          <div style={{ ...styles.statValue, color: COLORS.green }}>
-            <CountUp value={avg30} decimals={0} />
-          </div>
-        </div>
+        ))}
       </div>
 
       <div style={styles.chartContainer}>
+        <div style={styles.chartHeader}>
+          <span style={styles.chartTitle}>Daily Steps</span>
+        </div>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={data} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
+            <defs>
+              <linearGradient id="stepsGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={COLORS.green} stopOpacity={1} />
+                <stop offset="100%" stopColor={COLORS.green} stopOpacity={0.3} />
+              </linearGradient>
+            </defs>
             <CartesianGrid strokeDasharray="3 3" stroke={COLORS.slate700} />
             <XAxis
               dataKey="label"
@@ -151,9 +190,15 @@ export default function StepsChart() {
             />
             <Bar
               dataKey="steps"
-              fill={COLORS.green}
               radius={[4, 4, 0, 0]}
-            />
+            >
+              {data.map((entry) => (
+                <Cell
+                  key={entry.date}
+                  fill={entry.date === today ? COLORS.green : "url(#stepsGradient)"}
+                />
+              ))}
+            </Bar>
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -196,5 +241,16 @@ const styles: Record<string, React.CSSProperties> = {
     padding: "1rem",
     border: `1px solid ${COLORS.slate700}`,
     boxShadow: "0 2px 12px rgba(0,0,0,0.3)",
+  },
+  chartHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "0.75rem",
+  },
+  chartTitle: {
+    fontSize: "0.85rem",
+    fontWeight: 600,
+    color: COLORS.slate200,
   },
 };
