@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { apiError } from "@/lib/errors";
 
 const ALLOWED_DAYS = [7, 30, 42, 90, 180, 365] as const;
 
@@ -28,7 +29,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error("Fitness trend error:", error);
     return NextResponse.json(
-      { error: "Failed to load fitness trend data" },
+      apiError(error, "Failed to load fitness trend data"),
       { status: 500 }
     );
   }

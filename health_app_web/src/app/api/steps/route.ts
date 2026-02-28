@@ -1,12 +1,42 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { apiError } from "@/lib/errors";
 import { z } from "zod";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
-};
+function getCorsHeaders(): Record<string, string> {
+  const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",").map((o) =>
+    o.trim()
+  );
+
+  return {
+    "Access-Control-Allow-Origin": allowedOrigins?.join(", ") || "",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  };
+}
+
+function isOriginAllowed(origin: string | null): boolean {
+  if (!origin) return false;
+  const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",").map((o) =>
+    o.trim()
+  );
+  if (!allowedOrigins || allowedOrigins.length === 0) return false;
+  return allowedOrigins.includes(origin);
+}
+
+function corsHeaders(request?: NextRequest): Record<string, string> {
+  const origin = request?.headers.get("origin") ?? null;
+  const headers = getCorsHeaders();
+
+  // Only reflect the origin if it's in the allow list
+  if (origin && isOriginAllowed(origin)) {
+    headers["Access-Control-Allow-Origin"] = origin;
+  } else {
+    headers["Access-Control-Allow-Origin"] = "";
+  }
+
+  return headers;
+}
 
 const StepEntrySchema = z.object({
   date: z.string(),
@@ -19,8 +49,8 @@ const StepRequestSchema = z.union([
   z.array(StepEntrySchema),
 ]);
 
-export async function OPTIONS() {
-  return new NextResponse(null, { status: 204, headers: corsHeaders });
+export async function OPTIONS(request: NextRequest) {
+  return new NextResponse(null, { status: 204, headers: corsHeaders(request) });
 }
 
 export async function POST(request: NextRequest) {
@@ -31,7 +61,7 @@ export async function POST(request: NextRequest) {
     if (!parsed.success) {
       return NextResponse.json(
         { error: "Each entry requires 'date' and 'steps'" },
-        { status: 400, headers: corsHeaders }
+        { status: 400, headers: corsHeaders(request) }
       );
     }
 
@@ -57,21 +87,18 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       { success: true, upserted: count },
-      { headers: corsHeaders }
+      { headers: corsHeaders(request) }
     );
   } catch (error) {
     console.error("Steps POST error:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: error instanceof Error ? error.message : "Failed to save steps",
-      },
-      { status: 500, headers: corsHeaders }
-    );
+    return NextResponse.json(apiError(error, "Failed to save steps"), {
+      status: 500,
+      headers: corsHeaders(request),
+    });
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -81,12 +108,12 @@ export async function GET() {
       orderBy: { date: "desc" },
     });
 
-    return NextResponse.json({ steps }, { headers: corsHeaders });
+    return NextResponse.json({ steps }, { headers: corsHeaders(request) });
   } catch (error) {
     console.error("Steps GET error:", error);
-    return NextResponse.json(
-      { error: "Failed to load step data" },
-      { status: 500, headers: corsHeaders }
-    );
+    return NextResponse.json(apiError(error, "Failed to load step data"), {
+      status: 500,
+      headers: corsHeaders(request),
+    });
   }
 }
