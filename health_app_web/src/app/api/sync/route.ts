@@ -5,9 +5,11 @@ import {
   fetchActivities,
   fetchEvents,
   fetchWellness,
+  fetchPowerCurve,
   mapActivity,
   mapEvent,
   mapWellness,
+  mapPowerPbs,
 } from "@/lib/intervals";
 
 function toLocalDate(dateStr: string): string {
@@ -20,16 +22,18 @@ export async function POST() {
     const nextWeek = getNextWeekRange();
     const wellnessRange = getDateRange(365);
 
-    const [activitiesResult, eventsResult, nextWeekEventsResult, wellnessResult] =
+    const [activitiesResult, eventsResult, nextWeekEventsResult, wellnessResult, powerCurveResult] =
       await Promise.allSettled([
         fetchActivities(start, end),
         fetchEvents(start, end),
         fetchEvents(nextWeek.start, nextWeek.end),
         fetchWellness(wellnessRange.start, wellnessRange.end),
+        fetchPowerCurve(),
       ]);
 
     let workoutCount = 0;
     let fitnessCount = 0;
+    let powerPbCount = 0;
 
     // Build a map of activities by local date for matching with planned events
     const activityByDate = new Map<string, string[]>();
@@ -120,9 +124,30 @@ export async function POST() {
       }
     }
 
+    // Upsert power PBs — preserve previous power before overwriting
+    if (powerCurveResult.status === "fulfilled") {
+      const pbs = mapPowerPbs(powerCurveResult.value);
+      for (const pb of pbs) {
+        const existing = await prisma.powerPb.findUnique({
+          where: { duration: pb.duration },
+          select: { power: true, recordedAt: true },
+        });
+        const changed = existing && existing.power !== pb.power;
+        const prevFields = changed
+          ? { previousPower: existing.power, previousRecordedAt: existing.recordedAt }
+          : {};
+        await prisma.powerPb.upsert({
+          where: { duration: pb.duration },
+          create: { ...pb, previousPower: null, previousRecordedAt: null },
+          update: { ...pb, ...prevFields },
+        });
+        powerPbCount++;
+      }
+    }
+
     return NextResponse.json({
       success: true,
-      synced: { workouts: workoutCount, fitnessMetrics: fitnessCount },
+      synced: { workouts: workoutCount, fitnessMetrics: fitnessCount, powerPbs: powerPbCount },
     });
   } catch (error) {
     console.error("Sync error:", error);

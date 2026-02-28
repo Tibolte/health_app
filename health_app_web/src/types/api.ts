@@ -9,7 +9,7 @@ export interface SyncGetResponse {
 
 export interface SyncPostResponse {
   success: boolean;
-  synced?: { workouts: number; fitnessMetrics: number };
+  synced?: { workouts: number; fitnessMetrics: number; powerPbs: number };
   error?: string;
 }
 

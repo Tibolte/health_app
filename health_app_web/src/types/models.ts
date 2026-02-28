@@ -34,6 +34,8 @@ export interface PowerPb {
   id: string;
   duration: number;
   power: number;
+  previousPower?: number | null;
+  previousRecordedAt?: string | null;
   recordedAt: string;
 }
 

@@ -49,10 +49,12 @@ model FitnessMetric {
 }
 
 model PowerPb {
-  id         String   @id @default(uuid())
-  duration   Int      @unique // minutes (1, 5, 20, 60, etc.)
-  power      Int      // watts
-  recordedAt DateTime // date of the effort
+  id            String   @id @default(uuid())
+  duration      Int      @unique // seconds (5, 30, 60, 300, 1200, 3600)
+  power         Int      // watts
+  previousPower      Int?      // watts — previous best before current PB
+  previousRecordedAt DateTime? // date of the previous best effort
+  recordedAt         DateTime  // date of the effort
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

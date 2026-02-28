@@ -76,6 +76,29 @@ export default function RootLayout({
               .sync-spinner {
                 animation: spin 0.8s linear infinite;
               }
+              .pb-card {
+                animation: cardEntrance 0.5s ease-out both;
+                animation-delay: calc(var(--card-index, 0) * 0.1s);
+                transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+              }
+              .pb-card:hover {
+                transform: translateY(-2px);
+                filter: brightness(1.15);
+                box-shadow: 0 0 16px rgba(34,211,238,0.15);
+              }
+              @keyframes barGrow {
+                from { width: 0%; }
+              }
+              .pb-bar-fill {
+                animation: barGrow 0.8s ease-out both;
+              }
+              @keyframes tooltipFadeIn {
+                from { opacity: 0; transform: translateX(-50%) translateY(4px); }
+                to { opacity: 1; transform: translateX(-50%) translateY(0); }
+              }
+              .pb-tooltip {
+                animation: tooltipFadeIn 0.15s ease-out both;
+              }
             `,
           }}
         />

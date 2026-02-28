@@ -53,11 +53,28 @@ const IntervalsWellnessSchema = z.object({
   atlLoad: z.number().nullish(),
 });
 
+const IntervalsPowerCurveSchema = z.object({
+  list: z.array(
+    z.object({
+      secs: z.array(z.number()),
+      watts: z.array(z.number()),
+      activity_id: z.array(z.string()),
+    })
+  ),
+  activities: z.record(
+    z.string(),
+    z.object({
+      start_date_local: z.string(),
+    }).passthrough()
+  ),
+});
+
 // --- Inferred types from schemas ---
 
 export type IntervalsActivity = z.infer<typeof IntervalsActivitySchema>;
 export type IntervalsEvent = z.infer<typeof IntervalsEventSchema>;
 export type IntervalsWellness = z.infer<typeof IntervalsWellnessSchema>;
+export type IntervalsPowerCurve = z.infer<typeof IntervalsPowerCurveSchema>;
 
 // --- Fetch functions ---
 
@@ -95,6 +112,15 @@ export async function fetchWellness(
   if (!res.ok) throw new Error(`Wellness fetch failed: ${res.status}`);
   const json: unknown = await res.json();
   return z.array(IntervalsWellnessSchema).parse(json);
+}
+
+export async function fetchPowerCurve(): Promise<IntervalsPowerCurve> {
+  const { athleteId, headers } = getAuth();
+  const url = `${BASE_URL}/athlete/${athleteId}/power-curves?type=Ride&curves=all`;
+  const res = await fetch(url, { headers });
+  if (!res.ok) throw new Error(`Power curves fetch failed: ${res.status}`);
+  const json: unknown = await res.json();
+  return IntervalsPowerCurveSchema.parse(json);
 }
 
 // --- Mapping helpers ---
@@ -144,4 +170,24 @@ export function mapWellness(w: IntervalsWellness) {
     atl,
     tsb: +(ctl - atl).toFixed(1),
   };
+}
+
+const PB_DURATIONS = [5, 30, 60, 300, 1200, 3600] as const;
+
+export function mapPowerPbs(curve: IntervalsPowerCurve) {
+  const entry = curve.list[0];
+  if (!entry) return [];
+
+  return PB_DURATIONS.flatMap((targetSecs) => {
+    const idx = entry.secs.indexOf(targetSecs);
+    if (idx === -1) return [];
+    const watts = entry.watts[idx];
+    const activityId = entry.activity_id[idx];
+    if (watts == null || activityId == null) return [];
+    const activity = curve.activities[activityId];
+    const recordedAt = activity
+      ? new Date(activity.start_date_local)
+      : new Date();
+    return [{ duration: targetSecs, power: watts, recordedAt }];
+  });
 }
