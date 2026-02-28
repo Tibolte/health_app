@@ -178,6 +178,7 @@ export default function StepsChart() {
                 color: COLORS.slate200,
                 boxShadow: "0 4px 16px rgba(0,0,0,0.4)",
               }}
+              itemStyle={{ color: COLORS.green }}
               labelFormatter={(_, payload) => {
                 if (payload && payload.length > 0 && payload[0]?.payload) {
                   return formatFullDate(payload[0].payload.date);
