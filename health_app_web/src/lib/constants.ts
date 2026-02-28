@@ -1,0 +1,19 @@
+export const TOAST_TIMEOUT_MS = 4000;
+export const DAY_MS = 24 * 60 * 60 * 1000;
+
+export const COLORS = {
+  blue: "#3b82f6",
+  amber: "#f59e0b",
+  green: "#10b981",
+  red: "#ef4444",
+  slate50: "#f8fafc",
+  slate100: "#f1f5f9",
+  slate200: "#e2e8f0",
+  slate300: "#cbd5e1",
+  slate400: "#94a3b8",
+  slate500: "#64748b",
+  slate600: "#475569",
+  slate700: "#334155",
+  slate800: "#1e293b",
+  slate900: "#0f172a",
+} as const;

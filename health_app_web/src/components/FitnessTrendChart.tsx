@@ -11,16 +11,8 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-
-interface MetricPoint {
-  date: string;
-  timestamp: number;
-  ctl: number;
-  atl: number;
-  tsb: number;
-}
-
-const DAY_MS = 24 * 60 * 60 * 1000;
+import type { MetricPoint, FitnessTrendResponse } from "@/types";
+import { DAY_MS, COLORS } from "@/lib/constants";
 
 function toTimestamp(dateStr: string): number {
   return new Date(dateStr.substring(0, 10) + "T00:00:00").getTime();
@@ -57,9 +49,9 @@ export default function FitnessTrendChart() {
     try {
       const res = await fetch(`/api/fitness-trend?days=${days}`);
       if (!res.ok) throw new Error("Failed to fetch");
-      const json = await res.json();
+      const json: FitnessTrendResponse = await res.json();
       setData(
-        json.metrics.map((m: { date: string; ctl: number; atl: number; tsb: number }) => ({
+        json.metrics.map((m) => ({
           ...m,
           date: m.date.substring(0, 10),
           timestamp: toTimestamp(m.date),
@@ -79,7 +71,7 @@ export default function FitnessTrendChart() {
   if (loading) {
     return (
       <div style={styles.container}>
-        <p style={{ color: "#94a3b8", margin: 0 }}>Loading chart...</p>
+        <p style={{ color: COLORS.slate400, margin: 0 }}>Loading chart...</p>
       </div>
     );
   }
@@ -87,7 +79,7 @@ export default function FitnessTrendChart() {
   if (data.length === 0) {
     return (
       <div style={styles.container}>
-        <p style={{ color: "#64748b", margin: 0 }}>
+        <p style={{ color: COLORS.slate500, margin: 0 }}>
           No fitness data available. Sync to load historical data.
         </p>
       </div>
@@ -112,34 +104,34 @@ export default function FitnessTrendChart() {
       </div>
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={data} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+          <CartesianGrid strokeDasharray="3 3" stroke={COLORS.slate700} />
           <XAxis
             dataKey="timestamp"
             type="number"
             scale="time"
             domain={[Date.now() - days * DAY_MS, Date.now()]}
-            stroke="#64748b"
-            tick={{ fill: "#94a3b8", fontSize: 12 }}
+            stroke={COLORS.slate500}
+            tick={{ fill: COLORS.slate400, fontSize: 12 }}
             tickFormatter={formatTick}
           />
-          <YAxis stroke="#64748b" tick={{ fill: "#94a3b8", fontSize: 12 }} />
+          <YAxis stroke={COLORS.slate500} tick={{ fill: COLORS.slate400, fontSize: 12 }} />
           <Tooltip
             contentStyle={{
-              backgroundColor: "#1e293b",
-              border: "1px solid #334155",
+              backgroundColor: COLORS.slate800,
+              border: `1px solid ${COLORS.slate700}`,
               borderRadius: "6px",
-              color: "#e2e8f0",
+              color: COLORS.slate200,
             }}
             labelFormatter={(label) => formatTooltipLabel(Number(label))}
           />
           <Legend
-            wrapperStyle={{ color: "#94a3b8", fontSize: "0.8rem" }}
+            wrapperStyle={{ color: COLORS.slate400, fontSize: "0.8rem" }}
           />
           <Line
             type="monotone"
             dataKey="ctl"
             name="CTL (Fitness)"
-            stroke="#3b82f6"
+            stroke={COLORS.blue}
             strokeWidth={2}
             dot={false}
           />
@@ -147,7 +139,7 @@ export default function FitnessTrendChart() {
             type="monotone"
             dataKey="atl"
             name="ATL (Fatigue)"
-            stroke="#f59e0b"
+            stroke={COLORS.amber}
             strokeWidth={2}
             dot={false}
           />
@@ -155,7 +147,7 @@ export default function FitnessTrendChart() {
             type="monotone"
             dataKey="tsb"
             name="TSB (Form)"
-            stroke="#10b981"
+            stroke={COLORS.green}
             strokeWidth={2}
             dot={false}
           />
@@ -167,7 +159,7 @@ export default function FitnessTrendChart() {
 
 const styles: Record<string, React.CSSProperties> = {
   container: {
-    background: "#1e293b",
+    background: COLORS.slate800,
     borderRadius: "8px",
     padding: "1rem",
     marginTop: "0.75rem",
@@ -181,12 +173,12 @@ const styles: Record<string, React.CSSProperties> = {
   chartTitle: {
     fontSize: "0.85rem",
     fontWeight: 600,
-    color: "#cbd5e1",
+    color: COLORS.slate300,
   },
   select: {
-    background: "#0f172a",
-    color: "#e2e8f0",
-    border: "1px solid #334155",
+    background: COLORS.slate900,
+    color: COLORS.slate200,
+    border: `1px solid ${COLORS.slate700}`,
     borderRadius: "4px",
     padding: "0.25rem 0.5rem",
     fontSize: "0.8rem",

@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 const BASE_URL = "https://intervals.icu/api/v1";
 
 function getAuth() {
@@ -10,46 +12,52 @@ function getAuth() {
   return { athleteId, headers: { Authorization: `Basic ${token}` } };
 }
 
-// --- Types for Intervals.icu API responses ---
+// --- Zod schemas for Intervals.icu API responses ---
 
-export interface IntervalsActivity {
-  id: string;
-  start_date_local: string;
-  type: string;
-  name: string;
-  description?: string;
-  moving_time?: number; // seconds
-  distance?: number; // meters
-  icu_training_load?: number;
-  icu_intensity?: number;
-  weighted_average_watts?: number;
-  average_watts?: number;
-  max_watts?: number;
-  average_heartrate?: number;
-  max_heartrate?: number;
-  calories?: number;
-  total_elevation_gain?: number;
-}
+const IntervalsActivitySchema = z.object({
+  id: z.union([z.string(), z.number()]).transform(String),
+  start_date_local: z.string(),
+  type: z.string(),
+  name: z.string(),
+  description: z.string().optional(),
+  moving_time: z.number().optional(),
+  distance: z.number().optional(),
+  icu_training_load: z.number().optional(),
+  icu_intensity: z.number().optional(),
+  weighted_average_watts: z.number().optional(),
+  average_watts: z.number().optional(),
+  max_watts: z.number().optional(),
+  average_heartrate: z.number().optional(),
+  max_heartrate: z.number().optional(),
+  calories: z.number().optional(),
+  total_elevation_gain: z.number().optional(),
+});
 
-export interface IntervalsEvent {
-  id: number;
-  start_date_local: string;
-  category: string;
-  name: string;
-  description?: string;
-  coach_notes?: string;
-  type: string;
-  moving_time?: number; // seconds
-  icu_training_load?: number;
-}
+const IntervalsEventSchema = z.object({
+  id: z.number(),
+  start_date_local: z.string(),
+  category: z.string(),
+  name: z.string(),
+  description: z.string().optional(),
+  coach_notes: z.string().optional(),
+  type: z.string(),
+  moving_time: z.number().optional(),
+  icu_training_load: z.number().optional(),
+});
 
-export interface IntervalsWellness {
-  id: string;
-  ctl?: number;
-  atl?: number;
-  ctlLoad?: number;
-  atlLoad?: number;
-}
+const IntervalsWellnessSchema = z.object({
+  id: z.string(),
+  ctl: z.number().optional(),
+  atl: z.number().optional(),
+  ctlLoad: z.number().optional(),
+  atlLoad: z.number().optional(),
+});
+
+// --- Inferred types from schemas ---
+
+export type IntervalsActivity = z.infer<typeof IntervalsActivitySchema>;
+export type IntervalsEvent = z.infer<typeof IntervalsEventSchema>;
+export type IntervalsWellness = z.infer<typeof IntervalsWellnessSchema>;
 
 // --- Fetch functions ---
 
@@ -61,7 +69,8 @@ export async function fetchActivities(
   const url = `${BASE_URL}/athlete/${athleteId}/activities?oldest=${oldest}&newest=${newest}`;
   const res = await fetch(url, { headers });
   if (!res.ok) throw new Error(`Activities fetch failed: ${res.status}`);
-  return res.json();
+  const json: unknown = await res.json();
+  return z.array(IntervalsActivitySchema).parse(json);
 }
 
 export async function fetchEvents(
@@ -72,7 +81,8 @@ export async function fetchEvents(
   const url = `${BASE_URL}/athlete/${athleteId}/events?oldest=${oldest}&newest=${newest}`;
   const res = await fetch(url, { headers });
   if (!res.ok) throw new Error(`Events fetch failed: ${res.status}`);
-  return res.json();
+  const json: unknown = await res.json();
+  return z.array(IntervalsEventSchema).parse(json);
 }
 
 export async function fetchWellness(
@@ -83,7 +93,8 @@ export async function fetchWellness(
   const url = `${BASE_URL}/athlete/${athleteId}/wellness?oldest=${oldest}&newest=${newest}`;
   const res = await fetch(url, { headers });
   if (!res.ok) throw new Error(`Wellness fetch failed: ${res.status}`);
-  return res.json();
+  const json: unknown = await res.json();
+  return z.array(IntervalsWellnessSchema).parse(json);
 }
 
 // --- Mapping helpers ---
@@ -128,7 +139,7 @@ export function mapWellness(w: IntervalsWellness) {
   const ctl = w.ctl ?? w.ctlLoad ?? 0;
   const atl = w.atl ?? w.atlLoad ?? 0;
   return {
-    date: new Date(w.id), // wellness id is the date string
+    date: new Date(w.id),
     ctl,
     atl,
     tsb: +(ctl - atl).toFixed(1),

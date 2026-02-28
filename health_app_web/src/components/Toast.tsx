@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+import { TOAST_TIMEOUT_MS, COLORS } from "@/lib/constants";
 
 type ToastType = "success" | "error";
 
@@ -24,21 +25,19 @@ export function useToast() {
   return { toast, showToast, hideToast };
 }
 
-export function Toast({
-  message,
-  type,
-  onClose,
-}: {
+interface ToastProps {
   message: string;
   type: ToastType;
   onClose: () => void;
-}) {
+}
+
+export function Toast({ message, type, onClose }: ToastProps) {
   useEffect(() => {
-    const timer = setTimeout(onClose, 4000);
+    const timer = setTimeout(onClose, TOAST_TIMEOUT_MS);
     return () => clearTimeout(timer);
   }, [onClose]);
 
-  const bgColor = type === "success" ? "#10b981" : "#ef4444";
+  const bgColor = type === "success" ? COLORS.green : COLORS.red;
 
   return (
     <div
