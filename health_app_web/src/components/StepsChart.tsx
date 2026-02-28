@@ -170,6 +170,7 @@ export default function StepsChart() {
               tick={{ fill: COLORS.slate400, fontSize: 12 }}
             />
             <Tooltip
+              cursor={{ fill: "rgba(255,255,255,0.05)" }}
               contentStyle={{
                 backgroundColor: COLORS.slate800,
                 border: `1px solid ${COLORS.slate700}`,
