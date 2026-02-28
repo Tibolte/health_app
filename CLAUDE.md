@@ -2,13 +2,17 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Git
+
+Never add `Co-Authored-By` lines to commit messages.
+
 ## Repository Structure
 
 Monorepo with two projects:
 - **`health_app_web/`** — Next.js 14 dashboard (TypeScript, React 18, Prisma, PostgreSQL)
-- **`health_app_ios/`** — SwiftUI iOS app (HealthKit → web API)
+- **`health_app_ios/`** — SwiftUI iOS app (HealthKit → web API). See `health_app_ios/CLAUDE.md` for iOS-specific conventions.
 
-All web commands run from `health_app_web/`.
+All web commands run from `health_app_web/`. iOS commands run from `health_app_ios/`.
 
 ## Commands
 
