@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { apiError } from "@/lib/errors";
 import { getCurrentWeekRange, getNextWeekRange, getDateRange } from "@/lib/date-utils";
 import {
   fetchActivities,
@@ -151,13 +152,7 @@ export async function POST() {
     });
   } catch (error) {
     console.error("Sync error:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: error instanceof Error ? error.message : "Sync failed",
-      },
-      { status: 500 }
-    );
+    return NextResponse.json(apiError(error, "Sync failed"), { status: 500 });
   }
 }
 
@@ -193,7 +188,7 @@ export async function GET() {
   } catch (error) {
     console.error("GET sync error:", error);
     return NextResponse.json(
-      { error: "Failed to load dashboard data" },
+      apiError(error, "Failed to load dashboard data"),
       { status: 500 }
     );
   }

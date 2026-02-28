@@ -246,7 +246,7 @@ describe("POST /api/sync", () => {
 
     expect(response.status).toBe(500);
     expect(body.success).toBe(false);
-    expect(body.error).toBe("DB error");
+    expect(body.error).toBe("Sync failed");
   });
 });
 

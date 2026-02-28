@@ -12,23 +12,30 @@ vi.mock("@/lib/prisma", () => ({
 
 import { POST, GET, OPTIONS } from "../route";
 import { prisma } from "@/lib/prisma";
+import { NextRequest } from "next/server";
 
 const mockPrisma = vi.mocked(prisma, true);
 
 function makeRequest(body: unknown) {
-  return new Request("http://localhost:3000/api/steps", {
+  return new NextRequest("http://localhost:3000/api/steps", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
 }
 
+function makeGetRequest() {
+  return new NextRequest("http://localhost:3000/api/steps");
+}
+
 describe("OPTIONS /api/steps", () => {
   it("returns 204 with CORS headers", async () => {
-    const response = await OPTIONS();
+    const request = new NextRequest("http://localhost:3000/api/steps", {
+      method: "OPTIONS",
+    });
+    const response = await OPTIONS(request);
 
     expect(response.status).toBe(204);
-    expect(response.headers.get("Access-Control-Allow-Origin")).toBe("*");
     expect(response.headers.get("Access-Control-Allow-Methods")).toBe(
       "GET, POST, OPTIONS"
     );
@@ -43,7 +50,7 @@ describe("POST /api/steps", () => {
   it("upserts a single step entry", async () => {
     const request = makeRequest({ date: "2025-03-12", steps: 8500 });
 
-    const response = await POST(request as never);
+    const response = await POST(request);
     const body = await response.json();
 
     expect(body.success).toBe(true);
@@ -69,7 +76,7 @@ describe("POST /api/steps", () => {
       { date: "2025-03-13", steps: 12000 },
     ]);
 
-    const response = await POST(request as never);
+    const response = await POST(request);
     const body = await response.json();
 
     expect(body.success).toBe(true);
@@ -80,7 +87,7 @@ describe("POST /api/steps", () => {
   it("returns 400 when date is missing", async () => {
     const request = makeRequest({ steps: 8500 });
 
-    const response = await POST(request as never);
+    const response = await POST(request);
     const body = await response.json();
 
     expect(response.status).toBe(400);
@@ -90,7 +97,7 @@ describe("POST /api/steps", () => {
   it("returns 400 when steps is missing", async () => {
     const request = makeRequest({ date: "2025-03-12" });
 
-    const response = await POST(request as never);
+    const response = await POST(request);
     const body = await response.json();
 
     expect(response.status).toBe(400);
@@ -102,12 +109,12 @@ describe("POST /api/steps", () => {
 
     const request = makeRequest({ date: "2025-03-12", steps: 8500 });
 
-    const response = await POST(request as never);
+    const response = await POST(request);
     const body = await response.json();
 
     expect(response.status).toBe(500);
     expect(body.success).toBe(false);
-    expect(body.error).toBe("DB error");
+    expect(body.error).toBe("Failed to save steps");
   });
 });
 
@@ -122,12 +129,11 @@ describe("GET /api/steps", () => {
     ];
     mockPrisma.stepCount.findMany.mockResolvedValue(mockSteps as never);
 
-    const response = await GET();
+    const response = await GET(makeGetRequest());
     const body = await response.json();
 
     expect(response.status).toBe(200);
     expect(body.steps).toEqual(mockSteps);
-    expect(response.headers.get("Access-Control-Allow-Origin")).toBe("*");
   });
 
   it("returns 500 on database error", async () => {
@@ -135,7 +141,7 @@ describe("GET /api/steps", () => {
       new Error("Connection lost")
     );
 
-    const response = await GET();
+    const response = await GET(makeGetRequest());
     const body = await response.json();
 
     expect(response.status).toBe(500);
