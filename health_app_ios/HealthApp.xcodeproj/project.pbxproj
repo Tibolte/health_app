@@ -14,7 +14,20 @@
 		B1F5A00100000000000014 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1F5A00100000000000004 /* HealthKitService.swift */; };
 		B1F5A00100000000000015 /* StepSyncViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1F5A00100000000000005 /* StepSyncViewModel.swift */; };
 		B1F5A00100000000000016 /* StepSyncView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1F5A00100000000000006 /* StepSyncView.swift */; };
+		D1E2F3A400000011 /* FakeHealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E2F3A400000001 /* FakeHealthKitService.swift */; };
+		D1E2F3A400000012 /* FakeAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E2F3A400000002 /* FakeAPIClient.swift */; };
+		D1E2F3A400000013 /* StepSyncViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E2F3A400000003 /* StepSyncViewModelTests.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		D1E2F3A400000052 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1B2C3D40000000D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A1B2C3D40000000A;
+			remoteInfo = HealthApp;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		A1B2C3D400000002 /* HealthAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthAppApp.swift; sourceTree = "<group>"; };
@@ -27,10 +40,21 @@
 		B1F5A00100000000000005 /* StepSyncViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepSyncViewModel.swift; sourceTree = "<group>"; };
 		B1F5A00100000000000006 /* StepSyncView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepSyncView.swift; sourceTree = "<group>"; };
 		C1A2B3D400000001 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
+		D1E2F3A400000001 /* FakeHealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeHealthKitService.swift; sourceTree = "<group>"; };
+		D1E2F3A400000002 /* FakeAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeAPIClient.swift; sourceTree = "<group>"; };
+		D1E2F3A400000003 /* StepSyncViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepSyncViewModelTests.swift; sourceTree = "<group>"; };
+		D1E2F3A400000004 /* HealthAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HealthAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		A1B2C3D400000006 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D1E2F3A400000032 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -45,6 +69,7 @@
 			children = (
 				C1A2B3D400000001 /* Secrets.xcconfig */,
 				A1B2C3D400000008 /* HealthApp */,
+				D1E2F3A400000021 /* HealthAppTests */,
 				A1B2C3D400000009 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -66,6 +91,7 @@
 			isa = PBXGroup;
 			children = (
 				A1B2C3D400000005 /* HealthApp.app */,
+				D1E2F3A400000004 /* HealthAppTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -112,6 +138,24 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
+		D1E2F3A400000021 /* HealthAppTests */ = {
+			isa = PBXGroup;
+			children = (
+				D1E2F3A400000022 /* Fakes */,
+				D1E2F3A400000003 /* StepSyncViewModelTests.swift */,
+			);
+			path = HealthAppTests;
+			sourceTree = "<group>";
+		};
+		D1E2F3A400000022 /* Fakes */ = {
+			isa = PBXGroup;
+			children = (
+				D1E2F3A400000002 /* FakeAPIClient.swift */,
+				D1E2F3A400000001 /* FakeHealthKitService.swift */,
+			);
+			path = Fakes;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -131,6 +175,24 @@
 			productReference = A1B2C3D400000005 /* HealthApp.app */;
 			productType = "com.apple.product-type.application";
 		};
+		D1E2F3A400000041 /* HealthAppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D1E2F3A400000071 /* Build configuration list for PBXNativeTarget "HealthAppTests" */;
+			buildPhases = (
+				D1E2F3A400000031 /* Sources */,
+				D1E2F3A400000032 /* Frameworks */,
+				D1E2F3A400000033 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D1E2F3A400000051 /* PBXTargetDependency */,
+			);
+			name = HealthAppTests;
+			productName = HealthAppTests;
+			productReference = D1E2F3A400000004 /* HealthAppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -143,6 +205,10 @@
 				TargetAttributes = {
 					A1B2C3D40000000A = {
 						CreatedOnToolsVersion = 15.0;
+					};
+					D1E2F3A400000041 = {
+						CreatedOnToolsVersion = 15.0;
+						TestTargetID = A1B2C3D40000000A;
 					};
 				};
 			};
@@ -160,9 +226,20 @@
 			projectRoot = "";
 			targets = (
 				A1B2C3D40000000A /* HealthApp */,
+				D1E2F3A400000041 /* HealthAppTests */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D1E2F3A400000033 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		A1B2C3D40000000C /* Sources */ = {
@@ -179,7 +256,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D1E2F3A400000031 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D1E2F3A400000011 /* FakeHealthKitService.swift in Sources */,
+				D1E2F3A400000012 /* FakeAPIClient.swift in Sources */,
+				D1E2F3A400000013 /* StepSyncViewModelTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D1E2F3A400000051 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A1B2C3D40000000A /* HealthApp */;
+			targetProxy = D1E2F3A400000052 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		A1B2C3D40000000F /* Debug */ = {
@@ -289,6 +384,42 @@
 			};
 			name = Release;
 		};
+		D1E2F3A400000061 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7TJ7N4G8XC;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tguegan.HealthAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HealthApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HealthApp";
+			};
+			name = Debug;
+		};
+		D1E2F3A400000062 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7TJ7N4G8XC;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tguegan.HealthAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HealthApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HealthApp";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -306,6 +437,15 @@
 			buildConfigurations = (
 				A1B2C3D40000000F /* Debug */,
 				A1B2C3D400000010 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D1E2F3A400000071 /* Build configuration list for PBXNativeTarget "HealthAppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D1E2F3A400000061 /* Debug */,
+				D1E2F3A400000062 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
