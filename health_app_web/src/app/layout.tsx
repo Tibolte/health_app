@@ -86,6 +86,16 @@ export default function RootLayout({
                 filter: brightness(1.15);
                 box-shadow: 0 0 16px rgba(34,211,238,0.15);
               }
+              .step-card {
+                animation: cardEntrance 0.5s ease-out both;
+                animation-delay: calc(var(--card-index, 0) * 0.1s);
+                transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+              }
+              .step-card:hover {
+                transform: translateY(-2px);
+                filter: brightness(1.15);
+                box-shadow: 0 0 16px rgba(52,211,153,0.15);
+              }
               @keyframes barGrow {
                 from { width: 0%; }
               }

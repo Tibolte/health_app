@@ -46,3 +46,10 @@ export interface MetricPoint {
   atl: number;
   tsb: number;
 }
+
+export interface StepCount {
+  id: string;
+  date: string;
+  steps: number;
+  source: string;
+}
