@@ -17,13 +17,13 @@ describe("Toast component", () => {
   it("uses green background for success type", () => {
     render(<Toast message="OK" type="success" onClose={() => {}} />);
     const el = screen.getByText("OK");
-    expect(el.style.background).toBe("rgb(16, 185, 129)"); // #10b981
+    expect(el.style.background).toBe("rgb(52, 211, 153)"); // #34d399
   });
 
   it("uses red background for error type", () => {
     render(<Toast message="Failed" type="error" onClose={() => {}} />);
     const el = screen.getByText("Failed");
-    expect(el.style.background).toBe("rgb(239, 68, 68)"); // #ef4444
+    expect(el.style.background).toBe("rgb(251, 113, 133)"); // #fb7185
   });
 
   it("auto-dismisses after 4 seconds", () => {

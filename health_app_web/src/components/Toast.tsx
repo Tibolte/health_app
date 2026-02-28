@@ -48,10 +48,10 @@ export function Toast({ message, type, onClose }: ToastProps) {
         background: bgColor,
         color: "#fff",
         padding: "0.75rem 1.25rem",
-        borderRadius: "8px",
+        borderRadius: "10px",
         fontSize: "0.9rem",
         fontWeight: 500,
-        boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+        boxShadow: `0 4px 20px rgba(0,0,0,0.3), 0 0 12px ${bgColor}44`,
         zIndex: 9999,
         animation: "slideIn 0.3s ease-out",
       }}

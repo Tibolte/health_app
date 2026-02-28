@@ -1,28 +1,34 @@
 import type { Workout } from "@/types";
 import { formatDate, formatDuration } from "@/lib/format";
+import { getSportIcon } from "@/lib/sport";
 import { COLORS } from "@/lib/constants";
 
 interface WorkoutCardProps {
   workout: Workout;
   showCompletionStatus?: boolean;
+  index?: number;
 }
 
 export default function WorkoutCard({
   workout: w,
   showCompletionStatus = true,
+  index = 0,
 }: WorkoutCardProps) {
   const isPlannedOnly = !w.isCompleted;
+  const accentColor = isPlannedOnly ? COLORS.amber : COLORS.green;
 
   return (
     <div
+      className="workout-card"
       style={{
         ...styles.card,
-        border: isPlannedOnly ? "1px dashed #475569" : "1px solid #334155",
-        borderLeft: `3px solid ${isPlannedOnly ? COLORS.amber : COLORS.green}`,
-      }}
+        borderColor: `${accentColor}22`,
+        borderLeft: `3px solid ${accentColor}`,
+        "--card-index": index,
+      } as React.CSSProperties}
     >
       <div style={styles.header}>
-        <span style={styles.sport}>{w.sport}</span>
+        <span style={styles.sport}>{getSportIcon(w.sport)} {w.sport}</span>
         <span style={styles.date}>{formatDate(w.date)}</span>
       </div>
       <div style={styles.title}>{w.title}</div>
@@ -54,9 +60,11 @@ export default function WorkoutCard({
 const styles: Record<string, React.CSSProperties> = {
   card: {
     background: COLORS.slate800,
-    borderRadius: "8px",
+    borderRadius: "10px",
     padding: "1rem",
     position: "relative" as const,
+    border: "1px solid",
+    boxShadow: "0 2px 12px rgba(0,0,0,0.3)",
   },
   header: {
     display: "flex",
@@ -73,12 +81,12 @@ const styles: Record<string, React.CSSProperties> = {
   },
   date: {
     fontSize: "0.75rem",
-    color: COLORS.slate500,
+    color: COLORS.slate400,
   },
   title: {
     fontSize: "0.95rem",
     fontWeight: 600,
-    color: COLORS.slate200,
+    color: COLORS.slate100,
     marginBottom: "0.5rem",
   },
   stats: {

@@ -2,18 +2,22 @@ export const TOAST_TIMEOUT_MS = 4000;
 export const DAY_MS = 24 * 60 * 60 * 1000;
 
 export const COLORS = {
-  blue: "#3b82f6",
-  amber: "#f59e0b",
-  green: "#10b981",
-  red: "#ef4444",
-  slate50: "#f8fafc",
-  slate100: "#f1f5f9",
-  slate200: "#e2e8f0",
-  slate300: "#cbd5e1",
-  slate400: "#94a3b8",
-  slate500: "#64748b",
-  slate600: "#475569",
-  slate700: "#334155",
-  slate800: "#1e293b",
-  slate900: "#0f172a",
+  // Accents
+  blue: "#22d3ee",
+  purple: "#a78bfa",
+  amber: "#fbbf24",
+  green: "#34d399",
+  red: "#fb7185",
+
+  // Neutral scale
+  slate50: "#f0f4ff",
+  slate100: "#e2e8f8",
+  slate200: "#cbd5e8",
+  slate300: "#9ba8c2",
+  slate400: "#7a879e",
+  slate500: "#5b6478",
+  slate600: "#3d4557",
+  slate700: "#1e2a3a",
+  slate800: "#131b2e",
+  slate900: "#0a0e1a",
 } as const;

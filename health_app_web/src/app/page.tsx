@@ -5,6 +5,7 @@ import FitnessTrendChart from "@/components/FitnessTrendChart";
 import FitnessOverview from "@/components/FitnessOverview";
 import WeekWorkouts from "@/components/WeekWorkouts";
 import PowerPbs from "@/components/PowerPbs";
+import SkeletonDashboard from "@/components/SkeletonDashboard";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { COLORS } from "@/lib/constants";
 
@@ -24,7 +25,7 @@ export default function Dashboard() {
   if (loading) {
     return (
       <main style={styles.main}>
-        <p style={{ color: COLORS.slate400 }}>Loading...</p>
+        <SkeletonDashboard />
       </main>
     );
   }
@@ -34,6 +35,7 @@ export default function Dashboard() {
       <div style={styles.header}>
         <h1 style={styles.title}>Training Dashboard</h1>
         <button
+          className="sync-button"
           onClick={handleSync}
           disabled={syncing}
           style={{
@@ -42,7 +44,22 @@ export default function Dashboard() {
             cursor: syncing ? "not-allowed" : "pointer",
           }}
         >
-          {syncing ? "Syncing..." : "Sync"}
+          {syncing ? (
+            <>
+              <svg
+                className="sync-spinner"
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                style={{ verticalAlign: "middle", marginRight: "0.4rem" }}
+              >
+                <circle cx="8" cy="8" r="6" stroke="rgba(255,255,255,0.3)" strokeWidth="2" />
+                <path d="M14 8a6 6 0 0 0-6-6" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+              Syncing
+            </>
+          ) : "Sync"}
         </button>
       </div>
 
@@ -58,6 +75,8 @@ export default function Dashboard() {
         title="This Week"
         workouts={workouts}
         emptyMessage="No workouts yet. Click Sync to load data."
+        showSummary
+        showProgress
       />
 
       {nextWeekWorkouts.length > 0 && (
@@ -95,17 +114,18 @@ const styles: Record<string, React.CSSProperties> = {
   title: {
     fontSize: "1.5rem",
     fontWeight: 700,
-    color: COLORS.slate100,
+    color: COLORS.slate50,
     margin: 0,
   },
   syncButton: {
-    background: COLORS.blue,
+    background: `linear-gradient(135deg, ${COLORS.blue}, ${COLORS.purple})`,
     color: "#fff",
     border: "none",
-    borderRadius: "6px",
+    borderRadius: "8px",
     padding: "0.5rem 1.25rem",
     fontSize: "0.875rem",
     fontWeight: 600,
+    boxShadow: `0 0 12px rgba(34,211,238,0.2)`,
   },
   section: {
     marginBottom: "2rem",
@@ -113,7 +133,7 @@ const styles: Record<string, React.CSSProperties> = {
   sectionTitle: {
     fontSize: "1.1rem",
     fontWeight: 600,
-    color: COLORS.slate300,
+    color: COLORS.slate200,
     marginBottom: "0.75rem",
   },
 };

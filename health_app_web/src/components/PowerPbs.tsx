@@ -43,15 +43,17 @@ const styles: Record<string, React.CSSProperties> = {
   sectionTitle: {
     fontSize: "1.1rem",
     fontWeight: 600,
-    color: COLORS.slate300,
+    color: COLORS.slate200,
     marginBottom: "0.75rem",
   },
   table: {
     width: "100%",
     borderCollapse: "collapse" as const,
     background: COLORS.slate800,
-    borderRadius: "8px",
+    borderRadius: "10px",
     overflow: "hidden",
+    border: `1px solid ${COLORS.slate700}`,
+    boxShadow: "0 2px 12px rgba(0,0,0,0.3)",
   },
   th: {
     textAlign: "left" as const,
@@ -65,6 +67,7 @@ const styles: Record<string, React.CSSProperties> = {
   td: {
     padding: "0.6rem 1rem",
     fontSize: "0.875rem",
-    borderBottom: `1px solid ${COLORS.slate800}`,
+    borderBottom: `1px solid ${COLORS.slate700}`,
+    color: COLORS.slate200,
   },
 };

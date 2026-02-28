@@ -110,17 +110,18 @@ export default function FitnessTrendChart() {
             type="number"
             scale="time"
             domain={[Date.now() - days * DAY_MS, Date.now()]}
-            stroke={COLORS.slate500}
+            stroke={COLORS.slate600}
             tick={{ fill: COLORS.slate400, fontSize: 12 }}
             tickFormatter={formatTick}
           />
-          <YAxis stroke={COLORS.slate500} tick={{ fill: COLORS.slate400, fontSize: 12 }} />
+          <YAxis stroke={COLORS.slate600} tick={{ fill: COLORS.slate400, fontSize: 12 }} />
           <Tooltip
             contentStyle={{
               backgroundColor: COLORS.slate800,
               border: `1px solid ${COLORS.slate700}`,
-              borderRadius: "6px",
+              borderRadius: "8px",
               color: COLORS.slate200,
+              boxShadow: "0 4px 16px rgba(0,0,0,0.4)",
             }}
             labelFormatter={(label) => formatTooltipLabel(Number(label))}
           />
@@ -139,7 +140,7 @@ export default function FitnessTrendChart() {
             type="monotone"
             dataKey="atl"
             name="ATL (Fatigue)"
-            stroke={COLORS.amber}
+            stroke={COLORS.purple}
             strokeWidth={2}
             dot={false}
           />
@@ -160,9 +161,11 @@ export default function FitnessTrendChart() {
 const styles: Record<string, React.CSSProperties> = {
   container: {
     background: COLORS.slate800,
-    borderRadius: "8px",
+    borderRadius: "10px",
     padding: "1rem",
     marginTop: "0.75rem",
+    border: `1px solid ${COLORS.slate700}`,
+    boxShadow: "0 2px 12px rgba(0,0,0,0.3)",
   },
   header: {
     display: "flex",
@@ -173,13 +176,13 @@ const styles: Record<string, React.CSSProperties> = {
   chartTitle: {
     fontSize: "0.85rem",
     fontWeight: 600,
-    color: COLORS.slate300,
+    color: COLORS.slate200,
   },
   select: {
     background: COLORS.slate900,
     color: COLORS.slate200,
     border: `1px solid ${COLORS.slate700}`,
-    borderRadius: "4px",
+    borderRadius: "6px",
     padding: "0.25rem 0.5rem",
     fontSize: "0.8rem",
     cursor: "pointer",
