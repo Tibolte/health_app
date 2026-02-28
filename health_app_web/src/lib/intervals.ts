@@ -19,18 +19,18 @@ const IntervalsActivitySchema = z.object({
   start_date_local: z.string(),
   type: z.string(),
   name: z.string(),
-  description: z.string().optional(),
-  moving_time: z.number().optional(),
-  distance: z.number().optional(),
-  icu_training_load: z.number().optional(),
-  icu_intensity: z.number().optional(),
-  weighted_average_watts: z.number().optional(),
-  average_watts: z.number().optional(),
-  max_watts: z.number().optional(),
-  average_heartrate: z.number().optional(),
-  max_heartrate: z.number().optional(),
-  calories: z.number().optional(),
-  total_elevation_gain: z.number().optional(),
+  description: z.string().nullish(),
+  moving_time: z.number().nullish(),
+  distance: z.number().nullish(),
+  icu_training_load: z.number().nullish(),
+  icu_intensity: z.number().nullish(),
+  weighted_average_watts: z.number().nullish(),
+  average_watts: z.number().nullish(),
+  max_watts: z.number().nullish(),
+  average_heartrate: z.number().nullish(),
+  max_heartrate: z.number().nullish(),
+  calories: z.number().nullish(),
+  total_elevation_gain: z.number().nullish(),
 });
 
 const IntervalsEventSchema = z.object({
@@ -38,19 +38,19 @@ const IntervalsEventSchema = z.object({
   start_date_local: z.string(),
   category: z.string(),
   name: z.string(),
-  description: z.string().optional(),
-  coach_notes: z.string().optional(),
+  description: z.string().nullish(),
+  coach_notes: z.string().nullish(),
   type: z.string(),
-  moving_time: z.number().optional(),
-  icu_training_load: z.number().optional(),
+  moving_time: z.number().nullish(),
+  icu_training_load: z.number().nullish(),
 });
 
 const IntervalsWellnessSchema = z.object({
   id: z.string(),
-  ctl: z.number().optional(),
-  atl: z.number().optional(),
-  ctlLoad: z.number().optional(),
-  atlLoad: z.number().optional(),
+  ctl: z.number().nullish(),
+  atl: z.number().nullish(),
+  ctlLoad: z.number().nullish(),
+  atlLoad: z.number().nullish(),
 });
 
 // --- Inferred types from schemas ---
