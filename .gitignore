@@ -48,3 +48,6 @@ build/
 *.swp
 .build/
 Packages/
+
+# iOS secrets
+Secrets.xcconfig
