@@ -36,8 +36,8 @@ export async function POST() {
     let fitnessCount = 0;
     let powerPbCount = 0;
 
-    // Build a map of activities by local date for matching with planned events
-    const activityByDate = new Map<string, string[]>();
+    // Build a map of activities by date+type for matching with planned events
+    const activityByDateType = new Map<string, string[]>();
     const activities = activitiesResult.status === "fulfilled" ? activitiesResult.value : [];
 
     // Upsert activities (completed workouts)
@@ -50,23 +50,25 @@ export async function POST() {
       });
       workoutCount++;
 
-      const localDate = toLocalDate(activity.start_date_local);
-      const existing = activityByDate.get(localDate) || [];
+      const key = `${toLocalDate(activity.start_date_local)}:${activity.type}`;
+      const existing = activityByDateType.get(key) || [];
       existing.push(String(activity.id));
-      activityByDate.set(localDate, existing);
+      activityByDateType.set(key, existing);
     }
 
-    // Upsert events (planned workouts) — merge with completed activities when matched
+    // Upsert events (planned workouts) — merge with completed activities when matched by date AND type
     if (eventsResult.status === "fulfilled") {
       const workoutEvents = eventsResult.value.filter(
         (e) => e.category === "WORKOUT"
       );
       for (const event of workoutEvents) {
         const eventDate = toLocalDate(event.start_date_local);
-        const matchingActivityIds = activityByDate.get(eventDate);
+        const eventType = event.type || event.category;
+        const key = `${eventDate}:${eventType}`;
+        const matchingActivityIds = activityByDateType.get(key);
 
         if (matchingActivityIds && matchingActivityIds.length > 0) {
-          // A completed activity exists on the same day — merge planned data into it
+          // A completed activity exists on the same day with the same type — merge planned data into it
           const activityExternalId = matchingActivityIds.shift()!;
           await prisma.workout.update({
             where: { externalId: activityExternalId },
@@ -84,7 +86,7 @@ export async function POST() {
           });
           workoutCount++;
         } else {
-          // No matching activity — keep as planned workout
+          // No matching activity for this type — keep as planned workout
           const data = mapEvent(event);
           await prisma.workout.upsert({
             where: { externalId: data.externalId },

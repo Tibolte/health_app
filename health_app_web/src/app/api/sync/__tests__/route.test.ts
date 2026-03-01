@@ -161,6 +161,62 @@ describe("POST /api/sync", () => {
     );
   });
 
+  it("matches events to activities by type, not just date", async () => {
+    // Scenario: Ride completed + Core still planned on the same day
+    mockFetchActivities.mockResolvedValue([
+      {
+        id: "a1",
+        start_date_local: "2025-03-12T08:00:00",
+        type: "Ride",
+        name: "Morning Ride",
+        moving_time: 3600,
+        distance: 40000,
+      },
+    ]);
+    mockFetchEvents
+      .mockResolvedValueOnce([
+        {
+          id: 1,
+          start_date_local: "2025-03-12T07:00:00",
+          category: "WORKOUT",
+          name: "Sweet Spot Intervals",
+          type: "Ride",
+        },
+        {
+          id: 2,
+          start_date_local: "2025-03-12T18:00:00",
+          category: "WORKOUT",
+          name: "Core Strength",
+          type: "Strength",
+        },
+      ])
+      .mockResolvedValueOnce([]); // next week: empty
+    mockFetchWellness.mockResolvedValue([]);
+
+    await POST();
+
+    // Ride event should merge into Ride activity
+    expect(mockPrisma.workout.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { externalId: "a1" },
+        data: expect.objectContaining({
+          title: "Sweet Spot Intervals",
+        }),
+      })
+    );
+
+    // Core event should be upserted as a separate planned workout (not merged into Ride)
+    expect(mockPrisma.workout.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { externalId: "event-2" },
+        create: expect.objectContaining({
+          title: "Core Strength",
+          isCompleted: false,
+        }),
+      })
+    );
+  });
+
   it("handles partial fetch failures via Promise.allSettled", async () => {
     mockFetchActivities.mockRejectedValue(new Error("Network error"));
     mockFetchEvents
