@@ -189,6 +189,71 @@ final class StepSyncViewModelTests: XCTestCase {
         XCTAssertTrue(allSteps.allSatisfy { $0.syncStatus == .synced })
     }
 
+    // MARK: - Computed properties
+
+    func testTodaySteps_returnsCorrectValue() async {
+        let stepStore = FakeStepStore()
+        let today = DateFormatting.todayString()
+        stepStore.storedSteps = [
+            PersistedStepEntry(date: today, steps: 7500, syncStatus: .synced),
+            PersistedStepEntry(date: "2024-01-01", steps: 3000, syncStatus: .synced),
+        ]
+        let healthKit = FakeHealthKitService()
+        healthKit.shouldThrowOnAuthorization = true
+        let (vm, _, _, _, _) = makeViewModel(healthKit: healthKit, stepStore: stepStore)
+
+        await vm.loadSteps()
+
+        XCTAssertEqual(vm.todaySteps, 7500)
+    }
+
+    func testTodaySteps_returnsZeroWhenNoTodayEntry() async {
+        let stepStore = FakeStepStore()
+        stepStore.storedSteps = [
+            PersistedStepEntry(date: "2024-01-01", steps: 3000, syncStatus: .synced),
+        ]
+        let healthKit = FakeHealthKitService()
+        healthKit.shouldThrowOnAuthorization = true
+        let (vm, _, _, _, _) = makeViewModel(healthKit: healthKit, stepStore: stepStore)
+
+        await vm.loadSteps()
+
+        XCTAssertEqual(vm.todaySteps, 0)
+    }
+
+    func testSevenDayAverage_calculatesCorrectly() async {
+        let stepStore = FakeStepStore()
+        let days = DateFormatting.lastNDayStrings(7)
+        stepStore.storedSteps = days.enumerated().map { index, date in
+            PersistedStepEntry(date: date, steps: (index + 1) * 1000, syncStatus: .synced)
+        }
+        let healthKit = FakeHealthKitService()
+        healthKit.shouldThrowOnAuthorization = true
+        let (vm, _, _, _, _) = makeViewModel(healthKit: healthKit, stepStore: stepStore)
+
+        await vm.loadSteps()
+
+        // Average of 1000..7000 = 4000
+        XCTAssertEqual(vm.sevenDayAverage, 4000)
+    }
+
+    func testChronologicalSteps_sortsOldestFirst() async {
+        let stepStore = FakeStepStore()
+        stepStore.storedSteps = [
+            PersistedStepEntry(date: "2024-01-03", steps: 3000, syncStatus: .synced),
+            PersistedStepEntry(date: "2024-01-01", steps: 1000, syncStatus: .synced),
+            PersistedStepEntry(date: "2024-01-02", steps: 2000, syncStatus: .synced),
+        ]
+        let healthKit = FakeHealthKitService()
+        healthKit.shouldThrowOnAuthorization = true
+        let (vm, _, _, _, _) = makeViewModel(healthKit: healthKit, stepStore: stepStore)
+
+        await vm.loadSteps()
+
+        let dates = vm.chronologicalSteps.map(\.date)
+        XCTAssertEqual(dates, ["2024-01-01", "2024-01-02", "2024-01-03"])
+    }
+
     func testSyncSteps_marksFailedOnError() async {
         let connectivity = FakeConnectivityMonitor()
         connectivity.isConnected = false
