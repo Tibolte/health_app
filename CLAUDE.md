@@ -65,6 +65,14 @@ Four models: `Workout`, `FitnessMetric`, `PowerPb`, `StepCount`. See `prisma/sch
 
 Vitest with `@testing-library/react`. Tests mock Prisma and `fetch` at module level — no database needed. Tests colocated as `__tests__/` directories next to source files.
 
+## Pull Requests
+
+When creating a PR that includes UI changes (web or iOS):
+- **Screenshots:** attach before/after screenshots or a simulator screenshot showing the change. Use the iOS Simulator screenshot command (`xcrun simctl io booted screenshot`) or a browser screenshot as appropriate.
+- **Manual verification steps:** include a checklist of manual QA steps in the PR body under `## Test plan`, for example:
+  - Web: "Open localhost:3000, click Sync, verify the chart renders with data"
+  - iOS: "Run on simulator, verify light/dark mode, check Xcode previews render"
+
 ## CI
 
 GitHub Actions (`.github/workflows/ci.yml`): lint → type-check → test → build on push/PR to `main`.
