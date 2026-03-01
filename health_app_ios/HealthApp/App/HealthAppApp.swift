@@ -1,15 +1,24 @@
 import SwiftUI
+import SwiftData
 
 @main
 struct HealthAppApp: App {
+    let modelContainer: ModelContainer
+
     init() {
         Self.seedAPIKeyIfNeeded()
+        do {
+            modelContainer = try ModelContainer(for: PersistedStepEntry.self)
+        } catch {
+            fatalError("Failed to create ModelContainer: \(error)")
+        }
     }
 
     var body: some Scene {
         WindowGroup {
-            StepSyncView()
+            StepSyncView(modelContainer: modelContainer)
         }
+        .modelContainer(modelContainer)
     }
 
     private static func seedAPIKeyIfNeeded() {

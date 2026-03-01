@@ -17,6 +17,11 @@
 		D1E2F3A400000011 /* FakeHealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E2F3A400000001 /* FakeHealthKitService.swift */; };
 		D1E2F3A400000012 /* FakeAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E2F3A400000002 /* FakeAPIClient.swift */; };
 		D1E2F3A400000013 /* StepSyncViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E2F3A400000003 /* StepSyncViewModelTests.swift */; };
+		E1A2B3C400000011 /* PersistedStepEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A2B3C400000001 /* PersistedStepEntry.swift */; };
+		E1A2B3C400000012 /* StepStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A2B3C400000002 /* StepStore.swift */; };
+		E1A2B3C400000013 /* ConnectivityMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A2B3C400000003 /* ConnectivityMonitor.swift */; };
+		E1A2B3C400000014 /* FakeStepStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A2B3C400000004 /* FakeStepStore.swift */; };
+		E1A2B3C400000015 /* FakeConnectivityMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A2B3C400000005 /* FakeConnectivityMonitor.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +49,11 @@
 		D1E2F3A400000002 /* FakeAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeAPIClient.swift; sourceTree = "<group>"; };
 		D1E2F3A400000003 /* StepSyncViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepSyncViewModelTests.swift; sourceTree = "<group>"; };
 		D1E2F3A400000004 /* HealthAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HealthAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E1A2B3C400000001 /* PersistedStepEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistedStepEntry.swift; sourceTree = "<group>"; };
+		E1A2B3C400000002 /* StepStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepStore.swift; sourceTree = "<group>"; };
+		E1A2B3C400000003 /* ConnectivityMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectivityMonitor.swift; sourceTree = "<group>"; };
+		E1A2B3C400000004 /* FakeStepStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeStepStore.swift; sourceTree = "<group>"; };
+		E1A2B3C400000005 /* FakeConnectivityMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeConnectivityMonitor.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +117,7 @@
 		B1F5A00100000000000022 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				E1A2B3C400000001 /* PersistedStepEntry.swift */,
 				B1F5A00100000000000001 /* StepEntry.swift */,
 			);
 			path = Models;
@@ -116,8 +127,10 @@
 			isa = PBXGroup;
 			children = (
 				B1F5A00100000000000003 /* APIClient.swift */,
+				E1A2B3C400000003 /* ConnectivityMonitor.swift */,
 				B1F5A00100000000000004 /* HealthKitService.swift */,
 				B1F5A00100000000000002 /* KeychainService.swift */,
+				E1A2B3C400000002 /* StepStore.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -151,7 +164,9 @@
 			isa = PBXGroup;
 			children = (
 				D1E2F3A400000002 /* FakeAPIClient.swift */,
+				E1A2B3C400000005 /* FakeConnectivityMonitor.swift */,
 				D1E2F3A400000001 /* FakeHealthKitService.swift */,
+				E1A2B3C400000004 /* FakeStepStore.swift */,
 			);
 			path = Fakes;
 			sourceTree = "<group>";
@@ -253,6 +268,9 @@
 				B1F5A00100000000000014 /* HealthKitService.swift in Sources */,
 				B1F5A00100000000000015 /* StepSyncViewModel.swift in Sources */,
 				B1F5A00100000000000016 /* StepSyncView.swift in Sources */,
+				E1A2B3C400000011 /* PersistedStepEntry.swift in Sources */,
+				E1A2B3C400000012 /* StepStore.swift in Sources */,
+				E1A2B3C400000013 /* ConnectivityMonitor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -263,6 +281,8 @@
 				D1E2F3A400000011 /* FakeHealthKitService.swift in Sources */,
 				D1E2F3A400000012 /* FakeAPIClient.swift in Sources */,
 				D1E2F3A400000013 /* StepSyncViewModelTests.swift in Sources */,
+				E1A2B3C400000014 /* FakeStepStore.swift in Sources */,
+				E1A2B3C400000015 /* FakeConnectivityMonitor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
