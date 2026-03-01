@@ -17,6 +17,13 @@ function toLocalDate(dateStr: string): string {
   return dateStr.substring(0, 10);
 }
 
+function normalizeType(type: string): string {
+  const t = type.toLowerCase();
+  if (t === "virtualride") return "ride";
+  if (t === "virtualrun") return "run";
+  return t;
+}
+
 export async function POST() {
   try {
     const { start, end } = getCurrentWeekRange();
@@ -50,7 +57,7 @@ export async function POST() {
       });
       workoutCount++;
 
-      const key = `${toLocalDate(activity.start_date_local)}:${activity.type}`;
+      const key = `${toLocalDate(activity.start_date_local)}:${normalizeType(activity.type)}`;
       const existing = activityByDateType.get(key) || [];
       existing.push(String(activity.id));
       activityByDateType.set(key, existing);
@@ -64,7 +71,7 @@ export async function POST() {
       for (const event of workoutEvents) {
         const eventDate = toLocalDate(event.start_date_local);
         const eventType = event.type || event.category;
-        const key = `${eventDate}:${eventType}`;
+        const key = `${eventDate}:${normalizeType(eventType)}`;
         const matchingActivityIds = activityByDateType.get(key);
 
         if (matchingActivityIds && matchingActivityIds.length > 0) {

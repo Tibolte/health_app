@@ -217,6 +217,47 @@ describe("POST /api/sync", () => {
     );
   });
 
+  it("matches VirtualRide activity to Ride event on the same day", async () => {
+    mockFetchActivities.mockResolvedValue([
+      {
+        id: "a1",
+        start_date_local: "2025-03-12T12:00:00",
+        type: "VirtualRide",
+        name: "Lunch Virtual Ride",
+        moving_time: 3000,
+        distance: 24000,
+      },
+    ]);
+    mockFetchEvents
+      .mockResolvedValueOnce([
+        {
+          id: 1,
+          start_date_local: "2025-03-12T07:00:00",
+          category: "WORKOUT",
+          name: "Easy Spin",
+          type: "Ride",
+        },
+      ])
+      .mockResolvedValueOnce([]);
+    mockFetchWellness.mockResolvedValue([]);
+
+    await POST();
+
+    // VirtualRide should merge with the Ride event
+    expect(mockPrisma.workout.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { externalId: "a1" },
+        data: expect.objectContaining({
+          title: "Easy Spin",
+        }),
+      })
+    );
+    // Event record should be cleaned up
+    expect(mockPrisma.workout.deleteMany).toHaveBeenCalledWith({
+      where: { externalId: "event-1" },
+    });
+  });
+
   it("handles partial fetch failures via Promise.allSettled", async () => {
     mockFetchActivities.mockRejectedValue(new Error("Network error"));
     mockFetchEvents
