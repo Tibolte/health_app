@@ -22,6 +22,11 @@
 		E1A2B3C400000013 /* ConnectivityMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A2B3C400000003 /* ConnectivityMonitor.swift */; };
 		E1A2B3C400000014 /* FakeStepStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A2B3C400000004 /* FakeStepStore.swift */; };
 		E1A2B3C400000015 /* FakeConnectivityMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A2B3C400000005 /* FakeConnectivityMonitor.swift */; };
+		F1A2B3C400000011 /* DateFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C400000001 /* DateFormatting.swift */; };
+		F1A2B3C400000012 /* StepStatsRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C400000002 /* StepStatsRow.swift */; };
+		F1A2B3C400000013 /* StepChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C400000003 /* StepChartView.swift */; };
+		F1A2B3C400000014 /* StepDetailList.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C400000004 /* StepDetailList.swift */; };
+		F1A2B3C400000015 /* DateFormattingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C400000005 /* DateFormattingTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +59,11 @@
 		E1A2B3C400000003 /* ConnectivityMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectivityMonitor.swift; sourceTree = "<group>"; };
 		E1A2B3C400000004 /* FakeStepStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeStepStore.swift; sourceTree = "<group>"; };
 		E1A2B3C400000005 /* FakeConnectivityMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeConnectivityMonitor.swift; sourceTree = "<group>"; };
+		F1A2B3C400000001 /* DateFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateFormatting.swift; sourceTree = "<group>"; };
+		F1A2B3C400000002 /* StepStatsRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepStatsRow.swift; sourceTree = "<group>"; };
+		F1A2B3C400000003 /* StepChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepChartView.swift; sourceTree = "<group>"; };
+		F1A2B3C400000004 /* StepDetailList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepDetailList.swift; sourceTree = "<group>"; };
+		F1A2B3C400000005 /* DateFormattingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateFormattingTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -146,6 +156,10 @@
 		B1F5A00100000000000025 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				F1A2B3C400000001 /* DateFormatting.swift */,
+				F1A2B3C400000003 /* StepChartView.swift */,
+				F1A2B3C400000004 /* StepDetailList.swift */,
+				F1A2B3C400000002 /* StepStatsRow.swift */,
 				B1F5A00100000000000006 /* StepSyncView.swift */,
 			);
 			path = Views;
@@ -155,6 +169,7 @@
 			isa = PBXGroup;
 			children = (
 				D1E2F3A400000022 /* Fakes */,
+				F1A2B3C400000005 /* DateFormattingTests.swift */,
 				D1E2F3A400000003 /* StepSyncViewModelTests.swift */,
 			);
 			path = HealthAppTests;
@@ -271,6 +286,10 @@
 				E1A2B3C400000011 /* PersistedStepEntry.swift in Sources */,
 				E1A2B3C400000012 /* StepStore.swift in Sources */,
 				E1A2B3C400000013 /* ConnectivityMonitor.swift in Sources */,
+				F1A2B3C400000011 /* DateFormatting.swift in Sources */,
+				F1A2B3C400000012 /* StepStatsRow.swift in Sources */,
+				F1A2B3C400000013 /* StepChartView.swift in Sources */,
+				F1A2B3C400000014 /* StepDetailList.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -283,6 +302,7 @@
 				D1E2F3A400000013 /* StepSyncViewModelTests.swift in Sources */,
 				E1A2B3C400000014 /* FakeStepStore.swift in Sources */,
 				E1A2B3C400000015 /* FakeConnectivityMonitor.swift in Sources */,
+				F1A2B3C400000015 /* DateFormattingTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

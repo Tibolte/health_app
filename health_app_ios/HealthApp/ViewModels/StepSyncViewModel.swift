@@ -111,6 +111,25 @@ final class StepSyncViewModel {
         }
     }
 
+    // MARK: - Computed properties
+
+    var chronologicalSteps: [PersistedStepEntry] {
+        steps.sorted { $0.date < $1.date }
+    }
+
+    var todaySteps: Int {
+        let today = DateFormatting.todayString()
+        return steps.first { $0.date == today }?.steps ?? 0
+    }
+
+    var sevenDayAverage: Int {
+        let last7 = Set(DateFormatting.lastNDayStrings(7))
+        let matching = steps.filter { last7.contains($0.date) }
+        guard !matching.isEmpty else { return 0 }
+        let total = matching.reduce(0) { $0 + $1.steps }
+        return total / matching.count
+    }
+
     // MARK: - Private
 
     private func updatePendingCount() {

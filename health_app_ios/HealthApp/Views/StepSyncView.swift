@@ -2,20 +2,61 @@ import SwiftUI
 import SwiftData
 
 struct StepSyncView: View {
-    let modelContainer: ModelContainer
+    private let modelContainer: ModelContainer?
     @State private var viewModel: StepSyncViewModel?
+
+    init(modelContainer: ModelContainer) {
+        self.modelContainer = modelContainer
+    }
+
+    fileprivate init(viewModel: StepSyncViewModel) {
+        self.modelContainer = nil
+        self._viewModel = State(initialValue: viewModel)
+    }
 
     var body: some View {
         NavigationStack {
-            List {
+            ScrollView {
                 if let viewModel {
-                    if !viewModel.isConnected {
-                        offlineBanner
+                    VStack(spacing: 16) {
+                        if !viewModel.isConnected {
+                            offlineBanner
+                        }
+
+                        if viewModel.isLoading {
+                            ProgressView("Loading steps...")
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 40)
+                        } else if viewModel.steps.isEmpty {
+                            ContentUnavailableView(
+                                "No Steps",
+                                systemImage: "figure.walk",
+                                description: Text("Grant HealthKit access to see your steps.")
+                            )
+                        } else {
+                            StepStatsRow(
+                                todaySteps: viewModel.todaySteps,
+                                sevenDayAverage: viewModel.sevenDayAverage
+                            )
+
+                            StepChartView(
+                                steps: viewModel.chronologicalSteps,
+                                todayString: DateFormatting.todayString()
+                            )
+
+                            StepDetailList(
+                                steps: viewModel.steps,
+                                pendingCount: viewModel.pendingCount
+                            )
+
+                            statusFooter(viewModel: viewModel)
+                        }
                     }
-                    stepsSection(viewModel: viewModel)
+                    .padding()
                 }
             }
-            .navigationTitle("Step Sync")
+            .background(Color(.systemGroupedBackground))
+            .navigationTitle("Steps")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
@@ -33,6 +74,7 @@ struct StepSyncView: View {
                 }
             }
             .task {
+                guard viewModel == nil, let modelContainer else { return }
                 let store = StepStore(modelContainer: modelContainer)
                 let vm = StepSyncViewModel(stepStore: store)
                 viewModel = vm
@@ -42,78 +84,15 @@ struct StepSyncView: View {
         }
     }
 
-    // MARK: - Sections
+    // MARK: - Sub-views
 
     private var offlineBanner: some View {
-        Section {
-            Label("You're offline. Steps will sync when connection returns.", systemImage: "wifi.slash")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-        }
-    }
-
-    private func stepsSection(viewModel: StepSyncViewModel) -> some View {
-        Section {
-            if viewModel.isLoading {
-                HStack {
-                    Spacer()
-                    ProgressView("Loading steps...")
-                    Spacer()
-                }
-            } else if viewModel.steps.isEmpty {
-                ContentUnavailableView(
-                    "No Steps",
-                    systemImage: "figure.walk",
-                    description: Text("Grant HealthKit access to see your steps.")
-                )
-            } else {
-                ForEach(viewModel.steps, id: \.date) { entry in
-                    HStack {
-                        Text(entry.date)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                        Spacer()
-                        Text("\(entry.steps)")
-                            .font(.headline)
-                            .monospacedDigit()
-                        syncStatusIcon(for: entry.syncStatus)
-                    }
-                }
-            }
-        } header: {
-            HStack {
-                Text("Last 7 Days")
-                if viewModel.pendingCount > 0 {
-                    Spacer()
-                    Text("\(viewModel.pendingCount) pending")
-                        .font(.caption)
-                        .foregroundStyle(.orange)
-                }
-            }
-        } footer: {
-            statusFooter(viewModel: viewModel)
-        }
-    }
-
-    @ViewBuilder
-    private func syncStatusIcon(for status: SyncStatus) -> some View {
-        switch status {
-        case .synced:
-            Image(systemName: "checkmark.icloud.fill")
-                .foregroundStyle(.green)
-                .font(.caption)
-        case .pending:
-            Image(systemName: "icloud.slash")
-                .foregroundStyle(.orange)
-                .font(.caption)
-        case .syncing:
-            ProgressView()
-                .controlSize(.mini)
-        case .failed:
-            Image(systemName: "exclamationmark.icloud.fill")
-                .foregroundStyle(.red)
-                .font(.caption)
-        }
+        Label("You're offline. Steps will sync when connection returns.", systemImage: "wifi.slash")
+            .font(.subheadline)
+            .foregroundStyle(.secondary)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
+            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
     }
 
     @ViewBuilder
@@ -121,13 +100,43 @@ struct StepSyncView: View {
         if let error = viewModel.error {
             Label(error, systemImage: "exclamationmark.triangle")
                 .foregroundStyle(.red)
+                .font(.footnote)
+                .frame(maxWidth: .infinity, alignment: .leading)
         } else if let result = viewModel.lastSyncResult {
             Label(result, systemImage: "checkmark.circle")
                 .foregroundStyle(.green)
+                .font(.footnote)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 }
 
-#Preview {
-    StepSyncView(modelContainer: try! ModelContainer(for: PersistedStepEntry.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true)))
+#if DEBUG
+private struct NoOpStepStore: StepStoreProtocol {
+    func loadAllSteps() async -> [PersistedStepEntry] { [] }
+    func pendingSteps() async -> [PersistedStepEntry] { [] }
+    func upsertSteps(_ steps: [StepEntry]) async {}
+    func markSynced(dates: [String]) async {}
+    func markFailed(dates: [String]) async {}
+    func markSyncing(dates: [String]) async {}
 }
+
+#Preview("With Data") {
+    let vm = StepSyncViewModel(stepStore: NoOpStepStore())
+    let days = DateFormatting.lastNDayStrings(7)
+    let counts = [6200, 8400, 5100, 9300, 7800, 4500, 10200]
+    vm.steps = zip(days, counts).map { date, steps in
+        PersistedStepEntry(date: date, steps: steps, syncStatus: .synced)
+    }
+    vm.steps[vm.steps.count - 1].syncStatus = .pending
+    vm.pendingCount = 1
+    return StepSyncView(viewModel: vm)
+}
+
+#Preview("Empty") {
+    StepSyncView(modelContainer: try! ModelContainer(
+        for: PersistedStepEntry.self,
+        configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+    ))
+}
+#endif
